@@ -2,8 +2,9 @@
   "name": "vonneuro",
   "displayName": "vonNeuro",
   "description": "Run Python on vonNeuro hardware from VS Code: sign in once, run lab scripts, follow your jobs, see the network's devices and manage your own.",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "publisher": "vonneuro",
+  "icon": "media/icon.png",
   "license": "MIT",
   "repository": { "type": "git", "url": "https://github.com/vonneuro/vscode" },
   "homepage": "https://www.vonneuro.com",
@@ -11,7 +12,7 @@
   "categories": ["Other", "Data Science"],
   "keywords": ["vonneuro", "neuromorphic", "memristor", "hardware", "VOLT"],
   "main": "./extension.js",
-  "activationEvents": [],
+  "activationEvents": ["onLanguage:python"],
   "contributes": {
     "viewsContainers": {
       "activitybar": [{ "id": "vonneuro", "title": "vonNeuro", "icon": "media/vonneuro.svg" }]

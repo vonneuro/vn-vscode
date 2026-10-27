@@ -38,6 +38,7 @@ def manifest(pkg: dict) -> str:
       <Property Id="Microsoft.VisualStudio.Services.Links.Source" Value="{pkg['repository']['url']}"/>
     </Properties>
     <License>extension/LICENSE</License>
+    <Icon>extension/{pkg['icon']}</Icon>
   </Metadata>
   <Installation><InstallationTarget Id="Microsoft.VisualStudio.Code"/></Installation>
   <Dependencies/>
@@ -46,6 +47,7 @@ def manifest(pkg: dict) -> str:
     <Asset Type="Microsoft.VisualStudio.Services.Content.Details" Path="extension/README.md" Addressable="true"/>
     <Asset Type="Microsoft.VisualStudio.Services.Content.Changelog" Path="extension/CHANGELOG.md" Addressable="true"/>
     <Asset Type="Microsoft.VisualStudio.Services.Content.License" Path="extension/LICENSE" Addressable="true"/>
+    <Asset Type="Microsoft.VisualStudio.Services.Icons.Default" Path="extension/{pkg['icon']}" Addressable="true"/>
   </Assets>
 </PackageManifest>"""
 

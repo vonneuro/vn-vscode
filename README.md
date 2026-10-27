@@ -14,6 +14,8 @@ place also runs in the other.
   in its secret storage and renews it as needed, so scripts never ask for a password.
 - **Run on vonNeuro.** Use the ▷ button on a Python file, or right-click the file. The script runs
   with your Python and shows its output in the *vonNeuro run* panel.
+  - Start a script with a `# vonNeuro` comment (in its first five lines) and *▷ Run on vonNeuro*
+    appears right above it, and *■ Stop the run* while it runs.
   - Figures from `plt.show()` open beside your code.
   - Files from `save()` / `save_csv()` are written next to the script.
 - **Run progress.** The status bar shows the run as it goes:
@@ -37,7 +39,7 @@ place also runs in the other.
 1. Install the Python client into the Python you use, together with numpy and matplotlib:
 
    ```
-   pip install "git+https://github.com/vonneuro/messenger-api.git" numpy matplotlib
+   pip install "https://github.com/vonneuro/messenger-api/archive/HEAD.zip" numpy matplotlib
    ```
 
    If the client is missing, **Run on vonNeuro** offers to install it.

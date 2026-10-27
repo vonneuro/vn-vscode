@@ -4,6 +4,7 @@ const vscode = require("vscode");
 const { Hub } = require("./src/hub");
 const { DevicesTree, JobsTree, NodesTree, ACTIVE } = require("./src/views");
 const { Runner } = require("./src/run");
+const { RunLens } = require("./src/lens");
 
 const escapeHtml = (text) => String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
@@ -12,7 +13,9 @@ async function activate(context) {
   await hub.load();
   const devices = new DevicesTree(hub), jobs = new JobsTree(hub), nodes = new NodesTree(hub, devices);
   const refreshAll = () => { devices.refresh(); jobs.refresh(); nodes.refresh(); };
-  const runner = new Runner(context, hub, () => jobs.refresh());
+  let lens;
+  const runner = new Runner(context, hub, () => { jobs.refresh(); lens.refresh(); });
+  lens = new RunLens(() => !!runner.child);
 
   const fail = (error) => vscode.window.showErrorMessage("vonNeuro: " + (error.message || error));
   const command = (name, handler) => context.subscriptions.push(vscode.commands.registerCommand(name, async (...args) => {
@@ -24,6 +27,7 @@ async function activate(context) {
     vscode.window.registerTreeDataProvider("vonneuro.jobs", jobs),
     vscode.window.registerTreeDataProvider("vonneuro.nodes", nodes),
     hub.changed.event(refreshAll),
+    vscode.languages.registerCodeLensProvider({ language: "python" }, lens),
     vscode.workspace.onDidChangeConfiguration(async (event) => {
       if (event.affectsConfiguration("vonneuro.hubUrl")) { await hub.load(); refreshAll(); }
     }),
@@ -39,7 +43,7 @@ async function activate(context) {
     return true;
   });
   command("vonneuro.signOut", async () => { await hub.signOut(); vscode.window.showInformationMessage("vonNeuro: signed out."); });
-  command("vonneuro.run", (uri) => runner.run(uri));
+  command("vonneuro.run", async (uri) => { await runner.run(uri); lens.refresh(); });
   command("vonneuro.stop", () => runner.stop());
   command("vonneuro.refresh", refreshAll);
   command("vonneuro.openWebsite", () => vscode.env.openExternal(vscode.Uri.parse(hub.url() + "/devices")));

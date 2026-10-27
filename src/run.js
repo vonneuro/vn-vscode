@@ -6,7 +6,20 @@ const fs = require("fs");
 const path = require("path");
 const { seconds, utc } = require("./views");
 
-const CLIENT_SOURCE = "git+https://github.com/vonneuro/messenger-api.git";   // the public client package
+const CLIENT_SOURCE = "https://github.com/vonneuro/messenger-api/archive/HEAD.zip";   // the public client package; a zip so pip needs no git
+
+// "vonNeuro" in figlet's standard font, one letter per entry, joined row by row for the run banner.
+const LETTERS = [
+  ["       ", "__   __", String.raw`\ \ / /`, String.raw` \ V / `, String.raw`  \_/  `],   // v
+  ["       ", "  ___  ", String.raw` / _ \ `, "| (_) |", String.raw` \___/ `],             // o
+  ["       ", " _ __  ", String.raw`| '_ \ `, "| | | |", "|_| |_|"],                       // n
+  [" _   _ ", String.raw`| \ | |`, String.raw`|  \| |`, String.raw`| |\  |`, String.raw`|_| \_|`],  // N
+  ["       ", "  ___  ", String.raw` / _ \ `, "|  __/ ", String.raw` \___| `],             // e
+  ["       ", " _   _ ", "| | | |", "| |_| |", String.raw` \__,_|`],                       // u
+  ["      ", " _ __ ", "| '__|", "| |   ", "|_|   "],                                      // r
+  ["       ", "  ___  ", String.raw` / _ \ `, "| (_) |", String.raw` \___/ `],             // o
+];
+const BANNER = LETTERS[0].map((_, row) => LETTERS.map((letter) => letter[row]).join("").trimEnd()).join("\n");
 
 async function pythonFor(uri) {
   const configured = vscode.workspace.getConfiguration("vonneuro").get("pythonPath");
@@ -56,9 +69,13 @@ class Runner {
       const choice = await vscode.window.showErrorMessage(
         `${python} does not have the vonNeuro client (vonneuro_messenger).`, "Install it", "Choose another Python");
       if (choice === "Install it") {
-        const terminal = vscode.window.createTerminal("vonNeuro: install the client");
+        // Run pip as the terminal's process, not typed into a shell: no quoting rules to get wrong.
+        const terminal = vscode.window.createTerminal({
+          name: "vonNeuro: install the client",
+          shellPath: python,
+          shellArgs: ["-m", "pip", "install", "--upgrade", CLIENT_SOURCE, "numpy", "matplotlib"],
+        });
         terminal.show();
-        terminal.sendText(`"${python}" -m pip install --upgrade "${CLIENT_SOURCE}" numpy matplotlib`);
       } else if (choice === "Choose another Python") {
         vscode.commands.executeCommand("workbench.action.openSettings", "vonneuro.pythonPath");
       }
@@ -87,6 +104,8 @@ class Runner {
     const name = path.basename(uri.fsPath);
     this.output.clear();
     this.output.show(true);
+    this.output.appendLine(BANNER);
+    this.output.appendLine("  starting...\n");
     this.output.appendLine(`▶ ${name} on ${this.hub.url()} as ${session.username}` +
                            (limit ? ` (up to ${limit} requests)` : "") + `  [${python}]`);
     this.track = { started: Date.now(), jobs: 0, done: 0, failed: 0, run_s: 0, queue_s: 0, waiting: null, offset: 0,
