@@ -6,7 +6,7 @@
   "publisher": "vonneuro",
   "icon": "media/icon.png",
   "license": "MIT",
-  "repository": { "type": "git", "url": "https://github.com/vonneuro/vscode" },
+  "repository": { "type": "git", "url": "https://github.com/vonneuro/vn-vscode" },
   "homepage": "https://www.vonneuro.com",
   "engines": { "vscode": "^1.85.0" },
   "categories": ["Other", "Data Science"],
