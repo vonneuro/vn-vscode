@@ -1,0 +1,105 @@
+{
+  "name": "vonneuro",
+  "displayName": "vonNeuro",
+  "description": "Run Python on vonNeuro hardware from VS Code: sign in once, run lab scripts, follow your jobs, see the network's devices and manage your own.",
+  "version": "0.1.0",
+  "publisher": "vonneuro",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/vonneuro/vscode" },
+  "homepage": "https://www.vonneuro.com",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other", "Data Science"],
+  "keywords": ["vonneuro", "neuromorphic", "memristor", "hardware", "VOLT"],
+  "main": "./extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [{ "id": "vonneuro", "title": "vonNeuro", "icon": "media/vonneuro.svg" }]
+    },
+    "views": {
+      "vonneuro": [
+        { "id": "vonneuro.devices", "name": "Devices" },
+        { "id": "vonneuro.jobs", "name": "Jobs" },
+        { "id": "vonneuro.nodes", "name": "My hardware" }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "vonneuro.devices",
+        "contents": "Sign in with your vonNeuro account to see the network's hardware and run scripts on it.\n[Sign in](command:vonneuro.signIn)\nNo account yet? [Create one on vonneuro.com](https://www.vonneuro.com/signup.html)",
+        "when": "!vonneuro.signedIn"
+      }
+    ],
+    "commands": [
+      { "command": "vonneuro.signIn", "title": "Sign in", "category": "vonNeuro" },
+      { "command": "vonneuro.signOut", "title": "Sign out", "category": "vonNeuro" },
+      { "command": "vonneuro.run", "title": "Run on vonNeuro", "category": "vonNeuro", "icon": "$(play-circle)" },
+      { "command": "vonneuro.stop", "title": "Stop the run", "category": "vonNeuro", "icon": "$(debug-stop)" },
+      { "command": "vonneuro.refresh", "title": "Refresh", "category": "vonNeuro", "icon": "$(refresh)" },
+      { "command": "vonneuro.openDevicePage", "title": "Open the device's page", "category": "vonNeuro" },
+      { "command": "vonneuro.copyDeviceRef", "title": "Copy the device reference", "category": "vonNeuro" },
+      { "command": "vonneuro.showJob", "title": "Show the job", "category": "vonNeuro" },
+      { "command": "vonneuro.cancelJob", "title": "Cancel the job", "category": "vonNeuro", "icon": "$(close)" },
+      { "command": "vonneuro.editSetting", "title": "Change this setting", "category": "vonNeuro", "icon": "$(edit)" },
+      { "command": "vonneuro.toggleRestricted", "title": "Restricted to admins: switch", "category": "vonNeuro" },
+      { "command": "vonneuro.openWebsite", "title": "Open the hub in the browser", "category": "vonNeuro", "icon": "$(globe)" }
+    ],
+    "menus": {
+      "editor/title/run": [
+        { "command": "vonneuro.run", "when": "resourceLangId == python && !vonneuro.running", "group": "navigation" },
+        { "command": "vonneuro.stop", "when": "vonneuro.running", "group": "navigation" }
+      ],
+      "editor/context": [
+        { "command": "vonneuro.run", "when": "resourceLangId == python", "group": "vonneuro" }
+      ],
+      "explorer/context": [
+        { "command": "vonneuro.run", "when": "resourceLangId == python", "group": "vonneuro" }
+      ],
+      "view/title": [
+        { "command": "vonneuro.refresh", "when": "view =~ /^vonneuro\\./", "group": "navigation" },
+        { "command": "vonneuro.openWebsite", "when": "view == vonneuro.devices", "group": "navigation" }
+      ],
+      "view/item/context": [
+        { "command": "vonneuro.openDevicePage", "when": "viewItem =~ /^device/" },
+        { "command": "vonneuro.copyDeviceRef", "when": "viewItem =~ /^device/" },
+        { "command": "vonneuro.toggleRestricted", "when": "viewItem == device-managed" },
+        { "command": "vonneuro.cancelJob", "when": "viewItem == job-active", "group": "inline" },
+        { "command": "vonneuro.editSetting", "when": "viewItem == setting", "group": "inline" }
+      ],
+      "commandPalette": [
+        { "command": "vonneuro.openDevicePage", "when": "false" },
+        { "command": "vonneuro.copyDeviceRef", "when": "false" },
+        { "command": "vonneuro.showJob", "when": "false" },
+        { "command": "vonneuro.cancelJob", "when": "false" },
+        { "command": "vonneuro.editSetting", "when": "false" },
+        { "command": "vonneuro.toggleRestricted", "when": "false" },
+        { "command": "vonneuro.stop", "when": "vonneuro.running" }
+      ]
+    },
+    "configuration": {
+      "title": "vonNeuro",
+      "properties": {
+        "vonneuro.hubUrl": {
+          "type": "string",
+          "default": "https://series-marina-gigantic.ngrok-free.dev",
+          "description": "The vonNeuro hub to sign in to."
+        },
+        "vonneuro.pythonPath": {
+          "type": "string",
+          "default": "",
+          "description": "Python used for runs. Empty: the Python extension's selected interpreter, else `python`. It needs the vonneuro_messenger client (pip install it from github.com/vonneuro/messenger-api)."
+        },
+        "vonneuro.maxRequestsPerRun": {
+          "type": "number",
+          "default": 0,
+          "description": "Requests one run may make to the hub. 0: your account's Python-lab limit (each request counts against the hub's monthly tunnel allowance)."
+        },
+        "vonneuro.figuresInEditor": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show plt.show() figures as images in the editor (otherwise matplotlib opens its own windows)."
+        }
+      }
+    }
+  }
+}
